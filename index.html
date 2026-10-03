@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>くらし管理 タスク</title>
+<style>
+:root{
+  --bg:#faf8f5; --panel:#ffffff; --ink:#1d1b19; --sub:#6f6862; --line:#e6e0d8;
+  --accent:#d94f30; --accent2:#2f7d6b; --warn:#c8871a; --ok:#3f8f5c;
+  --c-sotsu:#d94f30; --c-school:#3f74b8; --c-life:#2f7d6b; --c-job:#7159b0; --c-org:#c8871a; --c-hobby:#b8488f;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141311; --panel:#1d1b19; --ink:#ece7e1; --sub:#a39b93; --line:#33302c;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic",system-ui,sans-serif;
+  line-height:1.7;-webkit-font-smoothing:antialiased}
+.wrap{max-width:980px;margin:0 auto;padding:28px 16px 80px}
+header{border-bottom:3px solid var(--ink);padding-bottom:14px;margin-bottom:22px}
+.kicker{font-size:12px;letter-spacing:.18em;color:var(--sub);margin:0 0 4px}
+h1{font-size:26px;margin:0}
+.lede{color:var(--sub);font-size:13px;margin:4px 0 0}
+.links{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.links a{font-size:12px;color:var(--ink);text-decoration:none;border:1px solid var(--line);background:var(--panel);padding:5px 10px;border-radius:8px}
+.links a:hover{border-color:var(--accent)}
+.counters{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.counter{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 16px;min-width:130px}
+.counter .n{font-size:22px;font-weight:700;line-height:1.2}
+.counter .l{font-size:11px;color:var(--sub)}
+.counter.hot .n{color:var(--accent)}
+h2{font-size:17px;margin:34px 0 10px;padding-left:10px;border-left:5px solid var(--accent)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 18px}
+ul.tasks{list-style:none;margin:0;padding:0}
+ul.tasks li{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px}
+ul.tasks li:last-child{border-bottom:none}
+.chk{width:18px;height:18px;flex:none;margin-top:3px;border:2px solid var(--sub);border-radius:5px}
+li.done .chk{background:var(--ok);border-color:var(--ok)}
+li.done .t{text-decoration:line-through;color:var(--sub)}
+.t{flex:1}
+.note{display:block;font-size:12px;color:var(--sub)}
+.tag{font-size:10.5px;padding:1px 8px;border-radius:20px;color:#fff;white-space:nowrap;margin-top:3px}
+.due{font-size:11.5px;color:var(--sub);white-space:nowrap;margin-top:3px;font-variant-numeric:tabular-nums}
+.due.hot{color:var(--accent);font-weight:700}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+td{padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+td.d{white-space:nowrap;color:var(--sub);font-variant-numeric:tabular-nums;width:110px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:720px){.grid{grid-template-columns:1fr}}
+h3{font-size:14px;margin:0 0 6px}
+.htable{width:100%;border-collapse:collapse;font-size:12.5px}
+.htable th,.htable td{text-align:center;padding:6px 4px;border-bottom:1px solid var(--line)}
+.htable th{font-weight:600;color:var(--sub);font-size:11px}
+.htable td.hname{text-align:left;font-size:13px;min-width:150px}
+.htable td.hname .note{font-size:11px;color:var(--sub)}
+.htable th.now,.htable td.now{background:#fff4ef}
+.hbox{width:22px;height:22px;cursor:pointer;accent-color:var(--ok)}
+.hprog{font-size:11.5px;color:var(--sub);white-space:nowrap}
+.hprog.hit{color:var(--ok);font-weight:700}
+.calwk{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:4px}
+.calwk .wdh{text-align:center;font-size:11px;color:var(--sub);padding:2px 0}
+.calgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.calcell{border:1px solid var(--line);border-radius:10px;padding:6px 5px;min-height:76px;background:var(--bg)}
+.calcell.out{opacity:.38}
+.calcell.today{border-color:var(--accent);background:#fff4ef}
+.calcell .dnum{font-size:11.5px;color:var(--sub);font-variant-numeric:tabular-nums}
+.calcell.today .dnum{color:var(--accent);font-weight:700}
+.calcell .ev{font-size:10.5px;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:2px 5px;margin-top:4px;line-height:1.35;word-break:break-word}
+.calcell .ev .tm{color:var(--sub);font-variant-numeric:tabular-nums;margin-right:3px}
+@media(max-width:620px){.calcell{min-height:60px;padding:4px}.calcell .ev{font-size:9.5px}}
+footer{margin-top:44px;color:var(--sub);font-size:12px;border-top:1px solid var(--line);padding-top:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="kicker">くらし管理 ／ 正本</p>
+  <h1>タスク</h1>
+  <p class="lede">最終更新 <span id="upd"></span>。ここに書いてないことは「まだ決まってない」。</p>
+  <div class="counters" id="counters"></div>
+</header>
+
+<h2>今日やること</h2>
+<div class="panel"><ul class="tasks" id="today"></ul></div>
+
+<h2>これから2週間の予定</h2>
+<div class="panel">
+  <div class="calwk"><div class="wdh">月</div><div class="wdh">火</div><div class="wdh">水</div><div class="wdh">木</div><div class="wdh">金</div><div class="wdh">土</div><div class="wdh">日</div></div>
+  <div class="calgrid" id="cal"></div>
+</div>
+
+<h2>習慣トラッカー（今週）</h2>
+<div class="panel"><div style="overflow-x:auto"><table class="htable" id="habits"></table></div>
+<p class="note" style="margin-top:8px">チェックはこのPC・このブラウザだけに保存されます（他の端末には出ません）。</p></div>
+
+<h2>タスク一覧</h2>
+<div class="grid" id="lists"></div>
+
+<footer>スマホ表示用の公開ページです。更新は元の「くらし管理」フォルダ側で行います。</footer>
+</div>
+
+<script>
+const DATA = {
+  updated: "2026-10-03",
+  deadlines: [
+    {label:"卒制：11キャラ テクスチャー＋リグ締切", date:"2026-10-22"},
+    {label:"卒制：Vコン完成・尺ロック", date:"2026-11-05"},
+    {label:"卒制 提出", date:"2027-01-15"}
+  ],
+  cats: {
+    sotsu:{name:"卒制", c:"var(--c-sotsu)"},
+    school:{name:"授業", c:"var(--c-school)"},
+    life:{name:"生活", c:"var(--c-life)"},
+    job:{name:"就活・仕事", c:"var(--c-job)"},
+    org:{name:"整理", c:"var(--c-org)"},
+    hobby:{name:"ものづくり", c:"var(--c-hobby)"}
+  },
+  habits: [
+    {id:"eng", name:"英語の勉強", target:7, note:""},
+    {id:"news", name:"日経ニュース", target:7, note:"政治・AI中心"},
+    {id:"mail", name:"メールを見る", target:7, note:""},
+    {id:"skin", name:"ヘアケア・スキンケア", target:7, note:""},
+    {id:"gym", name:"筋トレ", target:2, note:"週2目標・間を空けすぎない"},
+    {id:"mahjong", name:"麻雀の勉強", target:3, note:"雀魂・雀士→レベルアップ"},
+    {id:"tidy", name:"5分だけ片付け", target:5, note:"デスク・床など気になる場所から。やる場所は追って決める"}
+  ],
+  today: [
+    {t:"1体を選んでリメッシュ→UV→テクスチャーまで通す", cat:"sotsu", note:"これの所要時間が分かれば、10/22までに11体いけるか計算できる。顔パーツ（目・口・眉）は10貫共通構造なので最初の1体は慎重に"}
+  ],
+  tasks: [
+    {t:"週①（10/8）全キャラのリメッシュを終える", cat:"sotsu", due:"2026-10-08", note:"サバ1体はUV→テクスチャー→ブレンドシェイプまで通して時間を計測。顔パーツの頂点構造を10貫で揃えたまま進める"},
+    {t:"週②（10/15）残り10体へAIで横展開＋車輪リグ開始", cat:"sotsu", due:"2026-10-15", note:"UV・テクスチャー・ブレンドシェイプをサバの手順で展開"},
+    {t:"週③（10/22）【締切】11キャラ テクスチャー＋リグ完了", cat:"sotsu", due:"2026-10-22", note:"間に合わなければここで範囲を判断する"},
+    {t:"週④（10/29）ストーリーv12確定稿＋全カット仮カメラ配置", cat:"sotsu", due:"2026-10-29", note:"絵コンテは作らず、粗いカメラ配置を一周してからVコンへ"},
+    {t:"週⑤（11/5）Vコン完成・総尺ロック", cat:"sotsu", due:"2026-11-05", note:"ここから尺は変えない"},
+    {t:"週⑥（11/12）背景最終調整＋全カットレイアウト完了", cat:"sotsu", due:"2026-11-12", note:"厨房・レーンなど"},
+    {t:"週⑦〜⑪（11/19〜12/17）アニメーション全5分割", cat:"sotsu", due:"2026-12-17", note:"①11/19 ②11/26 ③12/3 ④12/10 ⑤12/17＋全体修正で完成"},
+    {t:"背景とキャラの1カット統合テスト", cat:"sotsu", due:"", note:"Blender FBX を Maya で読み込んで確認"},
+    {t:"デスクトップに散らばった卒制ファイルを整理", cat:"org", due:"", note:"キャラ画像・fbx・Sushi.mb など。Mayaの参照切れに注意して、Claudeと一緒に移す"},
+    {t:"卒制フォルダのバックアップ（毎週日曜）", cat:"sotsu", due:"", note:"外付けかクラウドへ"},
+    {t:"PCの中を整理したい", cat:"org", due:"", note:"デスクトップの卒制ファイル整理とまとめてやると効率的"},
+    {t:"毎日のルーティンを作りたい", cat:"org", due:"", note:"習慣トラッカーに「5分だけ片付け」を追加済み。どの場所を優先するか決める"},
+    {t:"3Dプリンター（大学のBambu Lab）でオリジナルグッズを作る", cat:"hobby", due:"", note:"方向性未定。アクスタ・キーホルダー・サバ寿司キャラのグッズ化など、ネタ出しから。Blenderでモデリング予定"},
+    {t:"ミシンで何か作る", cat:"hobby", due:"", note:"使う場所（大学の設備／自宅）・作るもの未定"},
+    {t:"オリジナルコップを作る", cat:"hobby", due:"", note:"3Dプリント本体に飲み物を入れる用途ならPLAは食品衛生・耐熱面で不向き。観賞用／パーツ印刷＋市販コップに加工／別素材かを検討"},
+    {t:"洋服の在庫管理をして、靴・バッグ・スカートを買う", cat:"life", due:"", note:"~/Desktop/ﾏｵﾁｬﾝ/wardrobe.html が既にあるので、まずそれを見直す"},
+    {t:"マネーフォワードMEを入れて口座・カードを連携する", cat:"life", due:"", note:"お金管理.html を作成済み。月末に合計を転記する運用"},
+    {t:"桃谷順天堂の商品が気になる", cat:"life", due:"", note:"買うか検討中のメモ"}
+  ],
+  cal: [
+    {date:"2026-10-03", time:"18:00", t:"ご飯"},
+    {date:"2026-10-04", time:"11:00", t:"🧊"},
+    {date:"2026-10-04", time:"17:00", t:"新宿かき氷 オクノシンジュク"},
+    {date:"2026-10-06", time:"10:00", t:"美容室"},
+    {date:"2026-10-07", time:"12:40", t:"税と会計（3限）／生成AI基礎（4限）"},
+    {date:"2026-10-07", time:"17:00", t:"まつげ"},
+    {date:"2026-10-08", time:"17:40", t:"卒業制作課題（6限）"},
+    {date:"2026-10-10", time:"11:00", t:"🧊"},
+    {date:"2026-10-12", time:"12:00", t:"🧊"},
+    {date:"2026-10-13", time:"19:00", t:"ご飯"},
+    {date:"2026-10-14", time:"12:40", t:"税と会計（3限）／生成AI基礎（4限）"},
+    {date:"2026-10-14", time:"17:00", t:"エクセ"},
+    {date:"2026-10-15", time:"17:40", t:"卒業制作課題（6限）"},
+    {date:"2026-10-16", time:"18:00", t:"トヨタアリーナ"}
+  ]
+};
+
+const today = new Date(); today.setHours(0,0,0,0);
+const days = s => Math.round((new Date(s+"T00:00:00") - today)/864e5);
+const mondayOf = d => { const x=new Date(d); const wd=(x.getDay()+6)%7; x.setDate(x.getDate()-wd); return x; };
+const isoDate = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+const todayIso = isoDate(today);
+document.getElementById("upd").textContent = DATA.updated;
+document.getElementById("counters").innerHTML = DATA.deadlines.map(d=>
+  `<div class="counter ${days(d.date)<30?'hot':''}"><div class="n">${days(d.date)}<span style="font-size:12px"> 日</span></div><div class="l">${d.label}（${d.date}）</div></div>`).join("");
+
+const tag = c => `<span class="tag" style="background:${DATA.cats[c].c}">${DATA.cats[c].name}</span>`;
+const item = x => {
+  const dd = x.due ? days(x.due) : null;
+  const due = x.due ? `<span class="due ${dd<=3?'hot':''}">${x.due.slice(5).replace('-','/')}${dd<0?'（過ぎた）':dd===0?'（今日）':`（あと${dd}日）`}</span>` : "";
+  return `<li class="${x.done?'done':''}"><span class="chk"></span><span class="t">${x.t}${x.note?`<span class="note">${x.note}</span>`:""}</span>${due}${tag(x.cat)}</li>`;
+};
+document.getElementById("today").innerHTML = DATA.today.map(item).join("");
+
+// カレンダー（今日から2週間先の週末までを、月曜始まりの週でグリッド表示）
+function renderCal(){
+  const rangeEnd = new Date(today); rangeEnd.setDate(rangeEnd.getDate()+13);
+  const gridStart = mondayOf(today);
+  const gridEndWk = mondayOf(rangeEnd); gridEndWk.setDate(gridEndWk.getDate()+6);
+  const dates = [];
+  for(let d=new Date(gridStart); d<=gridEndWk; d.setDate(d.getDate()+1)) dates.push(new Date(d));
+  const evByDate = {};
+  DATA.cal.forEach(e=>{ (evByDate[e.date] = evByDate[e.date]||[]).push(e); });
+  document.getElementById("cal").innerHTML = dates.map(d=>{
+    const ds = isoDate(d);
+    const out = (d<today || d>rangeEnd) ? " out" : "";
+    const isToday = ds===todayIso ? " today" : "";
+    const mstart = d.getDate()===1 ? `${d.getMonth()+1}/` : "";
+    const evs = (evByDate[ds]||[]).sort((a,b)=>a.time.localeCompare(b.time))
+      .map(e=>`<div class="ev"><span class="tm">${e.time}</span>${e.t}</div>`).join("");
+    return `<div class="calcell${out}${isToday}"><div class="dnum">${mstart}${d.getDate()}</div>${evs}</div>`;
+  }).join("");
+}
+renderCal();
+
+document.getElementById("lists").innerHTML = Object.keys(DATA.cats).map(c=>{
+  const xs = DATA.tasks.filter(x=>x.cat===c).sort((a,b)=>(a.due||"9")>(b.due||"9")?1:-1);
+  return `<div class="panel"><h3>${DATA.cats[c].name}</h3>${xs.length?`<ul class="tasks">${xs.map(item).join("")}</ul>`:`<p class="note">まだなし</p>`}</div>`;
+}).join("");
+
+// 習慣トラッカー（今週・月曜はじまり。チェックはこのブラウザのlocalStorageのみ）
+const WD = ["月","火","水","木","金","土","日"];
+const weekStart = mondayOf(today);
+const weekDates = WD.map((_,i)=>{ const d=new Date(weekStart); d.setDate(d.getDate()+i); return d; });
+const getCheck = (id,ds) => { try{ return localStorage.getItem(`habit_${id}_${ds}`)==="1"; }catch(e){ return false; } };
+const setCheck = (id,ds,v) => { try{ localStorage.setItem(`habit_${id}_${ds}`, v?"1":"0"); }catch(e){} };
+
+function renderHabits(){
+  const head = `<tr><th class="hname">習慣</th>${weekDates.map(d=>`<th class="${isoDate(d)===todayIso?'now':''}">${WD[(d.getDay()+6)%7]}<br>${d.getMonth()+1}/${d.getDate()}</th>`).join("")}<th>今週</th></tr>`;
+  const rows = DATA.habits.map(h=>{
+    const cells = weekDates.map(d=>{
+      const ds = isoDate(d);
+      const checked = getCheck(h.id, ds);
+      return `<td class="${ds===todayIso?'now':''}"><input type="checkbox" class="hbox" data-id="${h.id}" data-date="${ds}" ${checked?"checked":""}></td>`;
+    }).join("");
+    const count = weekDates.filter(d=>getCheck(h.id, isoDate(d))).length;
+    const hit = count >= h.target;
+    return `<tr><td class="hname">${h.name}${h.note?`<span class="note">${h.note}</span>`:""}</td>${cells}<td class="hprog ${hit?'hit':''}" data-count-for="${h.id}">${count}/${h.target}</td></tr>`;
+  }).join("");
+  document.getElementById("habits").innerHTML = head + rows;
+  document.querySelectorAll(".hbox").forEach(box=>{
+    box.addEventListener("change", e=>{
+      const id = e.target.dataset.id, ds = e.target.dataset.date;
+      setCheck(id, ds, e.target.checked);
+      const h = DATA.habits.find(x=>x.id===id);
+      const count = weekDates.filter(d=>getCheck(id, isoDate(d))).length;
+      const cell = document.querySelector(`[data-count-for="${id}"]`);
+      cell.textContent = `${count}/${h.target}`;
+      cell.classList.toggle("hit", count >= h.target);
+    });
+  });
+}
+renderHabits();
+</script>
+</body>
+</html>
